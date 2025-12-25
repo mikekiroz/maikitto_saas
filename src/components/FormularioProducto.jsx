@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast'
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { ArrowLeft, Info } from 'lucide-react'
@@ -36,30 +37,33 @@ export default function FormularioProducto({ alCerrar, alGuardar, productoAEdita
         try {
             const dataToSend = { ...formData }
 
-            // Si el producto es NUEVO, borramos el ID para que la base de datos use el contador (26, 27...)
+            // Si es nuevo, borramos el ID para que no choque
             if (!productoAEditar) {
                 delete dataToSend.id
             }
 
             if (productoAEditar) {
-                // LÓGICA DE ACTUALIZAR
+                // ACTUALIZAR
                 const { error } = await supabase
                     .from('productos')
                     .update(dataToSend)
                     .eq('id', productoAEditar.id)
                 if (error) throw error
+                toast.success('¡Producto actualizado con éxito! ✨')
             } else {
-                // LÓGICA DE CREAR
+                // CREAR
                 const { error } = await supabase
                     .from('productos')
                     .insert([dataToSend])
                 if (error) throw error
+                toast.success('¡Producto creado con éxito! 🍔')
             }
 
             alGuardar()
             alCerrar()
+
         } catch (err) {
-            alert("Error al procesar: " + err.message)
+            toast.error('Error al procesar: ' + err.message)
         } finally {
             setLoading(false)
         }
