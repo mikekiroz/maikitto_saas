@@ -1,3 +1,4 @@
+import { Toaster } from 'react-hot-toast'
 import React, { useEffect, useState } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { supabase } from './lib/supabase'
