@@ -44,19 +44,28 @@ export default function Productos({ restauranteId }) {
                         </div>
                         <div className="p-5">
                             <h3 className="font-bold text-lg text-white mb-1">{prod.nombre}</h3>
-                            {/* --- LÓGICA DE PRECIO CON DESCUENTO --- */}
-                            <div className="mb-4 text-left h-12 flex flex-col justify-end">
+                            {/* --- BLOQUE DE PRECIO CON VIDA --- */}
+                            <div className="mb-4 text-left h-14 flex flex-col justify-end">
                                 {prod.precio_descuento && Number(prod.precio_descuento) < Number(prod.precio) ? (
                                     <>
-                                        <span className="text-gray-500 text-xs line-through font-medium">
-                                            $ {Number(prod.precio).toLocaleString()}
-                                        </span>
-                                        <span className="text-yellow-500 font-black text-xl">
+                                        <div className="flex items-center gap-2 mb-0.5">
+                                            {/* Precio original con raya roja sutil */}
+                                            <span className="text-gray-500 text-sm line-through decoration-red-500/40">
+                                                $ {Number(prod.precio).toLocaleString()}
+                                            </span>
+                                            {/* Badge de Ahorro calculado automáticamente */}
+                                            <span className="bg-red-500/20 text-red-400 text-[10px] px-1.5 py-0.5 rounded-md font-bold border border-red-500/20">
+                                                -{Math.round(((Number(prod.precio) - Number(prod.precio_descuento)) / Number(prod.precio)) * 100)}% OFF
+                                            </span>
+                                        </div>
+                                        {/* Precio nuevo más grande y brillante */}
+                                        <span className="text-yellow-500 font-black text-2xl leading-none tracking-tighter">
                                             $ {Number(prod.precio_descuento).toLocaleString()}
                                         </span>
                                     </>
                                 ) : (
-                                    <span className="text-yellow-500 font-black text-xl">
+                                    /* Precio normal cuando no hay oferta */
+                                    <span className="text-yellow-500 font-black text-2xl tracking-tighter">
                                         $ {Number(prod.precio).toLocaleString()}
                                     </span>
                                 )}
