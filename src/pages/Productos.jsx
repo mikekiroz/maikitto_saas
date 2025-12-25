@@ -44,7 +44,23 @@ export default function Productos({ restauranteId }) {
                         </div>
                         <div className="p-5">
                             <h3 className="font-bold text-lg text-white mb-1">{prod.nombre}</h3>
-                            <p className="text-yellow-500 font-black text-xl mb-4">$ {Number(prod.precio).toLocaleString()}</p>
+                            {/* --- LÓGICA DE PRECIO CON DESCUENTO --- */}
+                            <div className="mb-4 text-left h-12 flex flex-col justify-end">
+                                {prod.precio_descuento && Number(prod.precio_descuento) < Number(prod.precio) ? (
+                                    <>
+                                        <span className="text-gray-500 text-xs line-through font-medium">
+                                            $ {Number(prod.precio).toLocaleString()}
+                                        </span>
+                                        <span className="text-yellow-500 font-black text-xl">
+                                            $ {Number(prod.precio_descuento).toLocaleString()}
+                                        </span>
+                                    </>
+                                ) : (
+                                    <span className="text-yellow-500 font-black text-xl">
+                                        $ {Number(prod.precio).toLocaleString()}
+                                    </span>
+                                )}
+                            </div>
                             <div className="flex gap-2">
                                 <button onClick={() => { setProductoParaEditar(prod); setMostrarForm(true); }} className="flex-1 flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-700 text-white py-2 rounded-lg transition-all text-xs font-bold cursor-pointer"><Edit3 size={14} /> Editar</button>
                                 <button onClick={() => borrarProducto(prod.id)} className="flex-1 flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 py-2 rounded-lg transition-all text-xs font-bold cursor-pointer"><Trash2 size={14} /> Borrar</button>
