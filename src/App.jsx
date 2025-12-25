@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { supabase } from './lib/supabase'
 
 // PÁGINAS
@@ -23,6 +23,9 @@ function App() {
     const [loading, setLoading] = useState(true)
     const [activeTab, setActiveTab] = useState('Dashboard')
     const [datosRestaurante, setDatosRestaurante] = useState(null)
+
+    // 1. DETECTAR EL SUBDOMINIO (La clave del éxito)
+    const isRegistro = window.location.hostname.includes('registro')
 
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
@@ -48,12 +51,18 @@ function App() {
         setLoading(false)
     }
 
-    if (loading) return <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-yellow-500 font-bold italic text-2xl">Maikitto...</div>
+    if (loading) return <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-yellow-500 font-bold italic text-2xl animate-pulse text-center">Maikitto...</div>
 
     return (
         <Routes>
-            <Route path="/login" element={!session ? <Login /> : <Navigate to="/" />} />
-            <Route path="/registro" element={!session ? <Registro /> : <Navigate to="/" />} />
+            {/* 
+        LOGICA DE ENTRADA INTELIGENTE:
+        Si no hay sesión:
+          - Si el usuario viene por 'registro.maikitto.com' -> Le mostramos Registro.
+          - Si viene por cualquier otro (cliente.maikitto.com o localhost) -> Le mostramos Login.
+      */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/registro" element={<Registro />} />
 
             <Route path="/*" element={
                 session ? (
@@ -74,15 +83,15 @@ function App() {
                                 {activeTab === 'Mensajes' && <MensajesBot restauranteId={datosRestaurante.id} />}
                                 {activeTab === 'Calificaciones' && <Calificaciones restauranteId={datosRestaurante.id} />}
                                 {activeTab === 'Restaurante' && (
-                                    <Restaurante
-                                        restauranteId={datosRestaurante.id}
-                                        alActualizar={() => checkRestaurante(session.user.id)}
-                                    />
+                                    <Restaurante restauranteId={datosRestaurante.id} alActualizar={() => checkRestaurante(session.user.id)} />
                                 )}
                             </main>
                         </div>
                     )
-                ) : (<Navigate to="/login" replace />)
+                ) : (
+                    // REDIRECCIÓN DINÁMICA SI NO ESTÁ LOGUEADO
+                    <Navigate to={isRegistro ? "/registro" : "/login"} replace />
+                )
             }
             />
         </Routes>
