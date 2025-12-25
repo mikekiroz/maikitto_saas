@@ -57,7 +57,7 @@ export default function DashboardPrincipal({ restauranteId }) {
     }, [restauranteId])
 
     const cards = [
-        { label: 'Ventas Totales', value: `$ ${stats.ventas.toLocaleString()}`, icon: <DollarSign size={20} />, color: 'text-yellow-500', bg: 'bg-yellow-500/10' },
+        { label: 'Ventas Totales', value: `$ .toLocaleString('es-CO')`, icon: <DollarSign size={20} />, color: 'text-yellow-500', bg: 'bg-yellow-500/10' },
         { label: 'Órdenes', value: stats.pedidos, icon: <ShoppingBag size={20} />, color: 'text-blue-500', bg: 'bg-blue-500/10' },
         { label: 'En Menú', value: stats.productos, icon: <Utensils size={20} />, color: 'text-green-500', bg: 'bg-green-500/10' },
         { label: 'Categorías', value: stats.categorias, icon: <Layers size={20} />, color: 'text-purple-500', bg: 'bg-purple-500/10' },
