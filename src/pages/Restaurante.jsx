@@ -207,9 +207,12 @@ export default function Restaurante({ restauranteId, alActualizar }) {
                         </button>
                     </div>
 
-                    <div className="mt-8 p-4 bg-blue-500/5 border border-blue-500/10 rounded-2xl">
-                        <p className="text-[10px] text-blue-400/80 italic leading-relaxed">
-                            * Nota de Seguridad: Si tu cuenta fue creada con Google, la contraseña se gestiona directamente en los ajustes de tu cuenta de Google. Maikitto no almacena claves de terceros.
+                    {/* --- NOTA DE SEGURIDAD CON CONTRASTE REAL --- */}
+                    <div className="mt-8 p-4 bg-white/[0.03] border border-gray-800 rounded-2xl">
+                        <p className="text-[11px] text-gray-400 italic leading-relaxed text-left">
+                            <span className="text-yellow-500/50 font-bold not-italic mr-1">*</span>
+                            Nota de Seguridad: Si tu cuenta fue creada con Google, la contraseña se gestiona directamente
+                            en los ajustes de tu cuenta de Google. Maikitto no almacena claves de terceros.
                         </p>
                     </div>
                 </section>
