@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { supabase } from './lib/supabase'
 
-// PÁGINAS
+// IMPORTACIÓN DE PÁGINAS Y COMPONENTES
 import Sidebar from './components/Sidebar'
 import Header from './components/Header'
 import Login from './pages/Login'
@@ -25,16 +25,15 @@ function App() {
     const [activeTab, setActiveTab] = useState('Dashboard')
     const [datosRestaurante, setDatosRestaurante] = useState(null)
 
-    // 1. DETECTAR EL SUBDOMINIO (La clave del éxito)
-    const isRegistro = window.location.hostname.includes('registro')
-
     useEffect(() => {
+        // 1. Detectar sesión inicial
         supabase.auth.getSession().then(({ data: { session } }) => {
             setSession(session)
             if (session) checkRestaurante(session.user.id)
             else setLoading(false)
         })
 
+        // 2. Escuchar cambios de autenticación
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session)
             if (session) checkRestaurante(session.user.id)
@@ -52,67 +51,73 @@ function App() {
         setLoading(false)
     }
 
-    if (loading) return <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-yellow-500 font-bold italic text-2xl animate-pulse text-center">Maikitto...</div>
+    if (loading) return (
+        <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+            <p className="text-yellow-500 font-bold italic text-2xl animate-pulse">Maikitto...</p>
+        </div>
+    )
+
+    const isRegistro = window.location.hostname.includes('registro')
 
     return (
         <>
             <Routes>
-                <Route path="/login" element={!session ? <Login /> : <Navigate to="/" />} />
-                <Route path="/registro" element={!session ? <Registro /> : <Navigate to="/" />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/registro" element={<Registro />} />
 
-                <Route
-                    path="/*"
-                    element={
-                        session ? (
-                            !datosRestaurante ? (
-                                <OnboardingRestaurante
-                                    userId={session.user.id}
-                                    userEmail={session.user.email}
-                                    alTerminar={() => checkRestaurante(session.user.id)}
-                                />
-                            ) : (
-                                <div className="flex min-h-screen bg-[#0a0a0a] text-white font-sans">
-                                    <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-                                    <main className="flex-1 ml-64 p-8 overflow-y-auto">
-                                        <Header
-                                            nombreRestaurante={datosRestaurante.nombre_restaurante}
-                                            email={session.user.email}
-                                        />
-
-                                        {activeTab === 'Dashboard' && <DashboardPrincipal restauranteId={datosRestaurante.id} />}
-                                        {activeTab === 'Categorias' && <Categorias restauranteId={datosRestaurante.id} />}
-                                        {activeTab === 'Productos' && <Productos restauranteId={datosRestaurante.id} />}
-                                        {activeTab === 'Pedidos' && <Pedidos restauranteId={datosRestaurante.id} />}
-                                        {activeTab === 'Cupones' && <Cupones restauranteId={datosRestaurante.id} />}
-                                        {activeTab === 'Mensajes' && <MensajesBot restauranteId={datosRestaurante.id} />}
-                                        {activeTab === 'Ventas' && <Ventas restauranteId={datosRestaurante.id} />}
-                                        {activeTab === 'Calificaciones' && <Calificaciones restauranteId={datosRestaurante.id} />}
-                                        {activeTab === 'Restaurante' && (
-                                            <Restaurante
-                                                restauranteId={datosRestaurante.id}
-                                                alActualizar={() => checkRestaurante(session.user.id)}
-                                            />
-                                        )}
-                                    </main>
-                                </div>
-                            )
+                <Route path="/*" element={
+                    session ? (
+                        !datosRestaurante ? (
+                            <OnboardingRestaurante
+                                userId={session.user.id}
+                                userEmail={session.user.email}
+                                alTerminar={() => checkRestaurante(session.user.id)}
+                            />
                         ) : (
-                            <Navigate to="/login" replace />
+                            <div className="flex min-h-screen bg-[#0a0a0a] text-white font-sans font-poppins">
+                                <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+                                <main className="flex-1 ml-64 p-8 overflow-y-auto">
+                                    <Header
+                                        nombreRestaurante={datosRestaurante.nombre_restaurante}
+                                        email={session.user.email}
+                                    />
+
+                                    {activeTab === 'Dashboard' && <DashboardPrincipal restauranteId={datosRestaurante.id} />}
+                                    {activeTab === 'Categorias' && <Categorias restauranteId={datosRestaurante.id} />}
+                                    {activeTab === 'Productos' && <Productos restauranteId={datosRestaurante.id} />}
+                                    {activeTab === 'Pedidos' && <Pedidos restauranteId={datosRestaurante.id} />}
+                                    {activeTab === 'Ventas' && <Ventas restauranteId={datosRestaurante.id} />}
+                                    {activeTab === 'Cupones' && <Cupones restauranteId={datosRestaurante.id} />}
+                                    {activeTab === 'Mensajes' && <MensajesBot restauranteId={datosRestaurante.id} />}
+                                    {activeTab === 'Calificaciones' && <Calificaciones restauranteId={datosRestaurante.id} />}
+                                    {activeTab === 'Restaurante' && (
+                                        <Restaurante
+                                            restauranteId={datosRestaurante.id}
+                                            alActualizar={() => checkRestaurante(session.user.id)}
+                                        />
+                                    )}
+                                </main>
+                            </div>
                         )
-                    }
-                />
+                    ) : (
+                        <Navigate to={isRegistro ? "/registro" : "/login"} replace />
+                    )
+                } />
             </Routes>
 
-            {/* EL ALTAVOZ DE NOTIFICACIONES: Fuera de las rutas para que se oiga en toda la App */}
+            {/* COMPONENTE DE NOTIFICACIONES ELEGANTES */}
             <Toaster
                 position="top-right"
                 toastOptions={{
+                    duration: 4000,
                     style: {
                         background: '#181818',
                         color: '#fff',
                         border: '1px solid #333',
                         fontFamily: 'Poppins, sans-serif',
-                        fontSize: '14px'
+                        fontSize: '14px',
+                        borderRadius: '12px',
+                        padding: '12px 20px',
                     },
                     success: {
                         iconTheme: {
