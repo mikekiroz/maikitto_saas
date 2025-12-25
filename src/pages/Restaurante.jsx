@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast'
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { CheckCircle, Lock, Save, Smartphone, MapPin, DollarSign, Globe } from 'lucide-react'
@@ -35,9 +36,9 @@ export default function Restaurante({ restauranteId, alActualizar }) {
             const { error } = await supabase.from('restaurantes').update(restaurante).eq('id', restauranteId)
             if (error) throw error
             if (alActualizar) await alActualizar()
-            alert("¡Configuración guardada! 🚀")
+            toast.success("¡Configuración guardada con éxito! 🚀")
         } catch (error) {
-            alert("Error: " + error.message)
+            toast.error('Hubo un problema al guardar.')
         } finally {
             setGuardando(false)
         }
